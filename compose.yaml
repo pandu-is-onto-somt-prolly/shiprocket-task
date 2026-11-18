@@ -1,0 +1,26 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama-models:/root/.ollama
+    # No host port: the inference endpoint is private to this Docker network.
+    restart: unless-stopped
+  voice:
+    build:
+      context: .
+      dockerfile: voice_backend/Dockerfile
+    env_file: .env
+    environment:
+      OLLAMA_BASE_URL: http://ollama:11434/v1
+      VOICE_DATABASE: /app/data/happysmile.sqlite3
+    ports:
+      - "127.0.0.1:7860:7860"
+    volumes:
+      - ./voice-data:/app/data
+      - voice-models:/models
+    depends_on:
+      - ollama
+    restart: unless-stopped
+volumes:
+  ollama-models:
+  voice-models:

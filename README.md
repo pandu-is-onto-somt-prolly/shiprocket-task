@@ -1,116 +1,82 @@
-# HappySmile · Care Connect
+# HappySmile Care Connect
 
-A complete, interactive two-screen product prototype: a patient requests an AI callback, and the clinic sees the enquiry, outcome and next action.
+A two-screen dental callback application with a patient form, clinic workspace, a fictional demonstration, and an optional self-hosted voice backend for real test calls.
 
-**This is a simulation.** It does not dial numbers, send messages, record audio, make real appointments, connect to a CRM, or send enquiry data to a server. Refreshing the page resets the session. Please use the sample details.
+The live agent uses **Pipecat Flows + local Whisper + Ollama + Kokoro**. It follows explicit pathways and speaks approved script lines. Twilio connects the actual phone call. No Bolna subscription or cloud speech/model API key is used. Carrier minutes, phone numbers, hosting and optional answering-machine detection can still cost money.
 
-## Fastest route: paste one file into GitHub
+**Start with [VOICE-SETUP.md](VOICE-SETUP.md) for real calls.** Uploading a static page to Vercel alone does not run local speech models or the phone backend. The adapter is implemented but has not been validated on a real phone in the authoring environment. [REAL-CALL-CHECKLIST.md](REAL-CALL-CHECKLIST.md) separates automated coverage from required live acceptance tests.
 
-1. Open the `index.html` file from this ZIP in a text editor and copy its contents.
-2. Create a GitHub repository, choose **Add file → Create new file**, and name the file **`index.html`**.
-3. Paste the entire code and commit it. The filename must be lowercase.
-4. In Vercel, import that GitHub repository.
-5. Choose **Other** as the framework preset. Leave the build command empty. Use **`.`** as the output directory and leave the root directory at the repository root.
-6. Deploy. No API keys, dependencies or environment variables are required.
+## Upload to GitHub and Vercel
 
-For this one-file route, you need only `index.html`. Do not copy the full-project `vercel.json`, because that configuration points to the `dist` directory.
+1. Extract this ZIP. Upload its contents to your GitHub repository, preserving folders. Do not upload the ZIP as your website.
+2. Import that repository in Vercel. Use framework **Other**, repository root, and output directory **dist**. The included `vercel.json` provides the settings; there is no frontend build or dependency installation.
+3. Deploy the frontend. Follow `VOICE-SETUP.md` to run the Python backend on your own machine or server, then connect it through the page's **Connect your voice backend** section.
+4. Keep the filled `.env`, `voice-data` folder, tokens and carrier credentials out of GitHub. Only `.env.example` belongs in the repository.
 
-You can also double-click `index.html` locally to try the one-file demo. Google Fonts is optional: the interface uses system fonts if that request is unavailable.
+The root `index.html` is also a self-contained copy you can paste into a new GitHub file. For that route use Vercel output directory `.` and omit the full project's `vercel.json`. It includes the connection controls but still needs the separate voice backend. Opening the file directly is suitable for the simulation; use an HTTPS deployment or local HTTP server for live backend access and origin checks.
 
-## Alternative: upload the complete project
+## Two modes
 
-Extract the ZIP and upload its **contents** to your GitHub repository, keeping `dist`, `tests`, and the files below in the same relative locations. Do not upload the ZIP itself as your website.
+| Mode | How to start | What is real |
+| --- | --- | --- |
+| Sample demonstration | Use sample details, submit, then Play simulated callback | Fictional, in-memory enquiries and calendar outcomes. No phone call. Refresh/reset clears these records. |
+| Live phone test | Connect backend, prepare models, check test-phone consent, choose Call my test phone | One outbound call to the server-configured phone. Structured outcomes, suppression and staff tasks persist in SQLite. |
 
-Import that repository into Vercel. The included `vercel.json` supplies these settings:
+Live records appear separately in the clinic workspace. Sample counters and simulation scenarios do not represent live results. The live agent is **English-only**, even though the sample form demonstrates other languages. It records appointment or callback **requests for staff review**; there is no calendar integration or automatic callback scheduler.
 
-| Setting | Value |
+Closing the browser or resetting the sample demonstration does **not** hang up a real call. Use **Stop contact and end call**, or hang up the phone. If termination is uncertain, inspect the carrier console. Never start a second call merely because a browser response timed out.
+
+## Call pathways and safeguards
+
+- Recipient permission -> clinic/service -> exact preference -> spoken read-back -> fresh explicit confirmation -> durable staff task.
+- Corrections invalidate the earlier preference and confirmation. Interrupted or early confirmations are rejected by the speech guard.
+- Opt-out and wrong-person responses stop outreach; suppression survives process restarts. New owner permission must be recorded explicitly before another test call.
+- Human requests, unsupported language, urgent concerns, voicemail, repeated misunderstanding and service failures leave staff work. Optional staff transfer is a request to the carrier, never proof of accepted handoff.
+- One live call at a time, fixed destination, daily cap, cooldown, real India calling hours, bounded silence/repair attempts and a carrier duration limit.
+- Durable idempotency, uncertain-launch reconciliation, signed carrier webhooks, ordered status processing and expiring single-use media access.
+
+These are implemented safeguards, not a guarantee that speech recognition or real-world calls will handle every situation correctly. The test release is for your own verified phone, not unattended patient campaigns. Staff monitoring is required for the follow-up queue.
+
+## Source map
+
+| File/folder | Purpose |
 | --- | --- |
-| Framework preset | Other |
-| Root directory | Repository root |
-| Build command | Empty / no build step |
-| Install command | Empty / no installation |
-| Output directory | `dist` |
-| Environment variables | None |
+| `dist/index.html`, `dist/style.css` | Page structure and responsive design. |
+| `dist/app.js`, `dist/model.mjs` | Sample workflow and fictional calendar. |
+| `dist/live.js` | Live controls and structured records. Operator token stays in page memory. |
+| `voice_backend/core.py`, `guard.py` | Durable state transitions, admission rules and confirmation guard. |
+| `voice_backend/runtime.py` | Pipecat speech pipeline, approved script and pathway tools. |
+| `voice_backend/app.py`, `carrier.py` | Authenticated API, signed webhooks, media transport and Twilio calls. |
+| `compose.yaml`, `.env.example` | Local inference/backend setup and configuration template. |
+| `VOICE-SETUP.md` | Setup, configuration, troubleshooting and operations. |
+| `REAL-CALL-CHECKLIST.md` | Behavior matrix and required real-phone tests. |
+| `tests`, `voice_backend/tests` | Frontend policy and backend policy/HTTP checks. |
+| `bundle.mjs`, `index.html` | Rebuild script and generated one-file frontend. |
 
-The complete-project deployment serves the separate files in `dist`. The root `index.html` is a convenience copy for opening locally or using the one-file route.
+Edit the separate files in `dist`, then run `node bundle.mjs` to refresh the self-contained page.
 
-Official Vercel references: [static build configuration](https://vercel.com/docs/builds/configure-a-build) and [vercel.json settings](https://vercel.com/docs/project-configuration/vercel-json). To share an assignment link, check it in a signed-out browser after deployment; team-level deployment protection may require configuration in your Vercel account.
-
-## Try the demo
-
-### Patient experience
-
-1. Click **Use sample details**.
-2. Select a clinic, service and language. Leave **Call me soon** selected, or choose a later callback.
-3. Check the callback permission box and submit.
-4. For an immediate callback, click **Play simulated callback**. The fictional call progresses for about four seconds.
-5. Click **View clinic workspace** to inspect the same enquiry.
-
-### Clinic workspace
-
-- Start in **Needs attention** to see an unanswered transfer, an uncertain booking and an owned follow-up.
-- Filter by clinic, search, or switch to all enquiries / confirmed bookings.
-- Select an enquiry to see the summary, contact preference, timeline, appointment reference and next task.
-- Take ownership, arrange a callback, resolve a follow-up, stop contact, or reconcile the uncertain simulated calendar request.
-- A stopped callback does not cancel an already confirmed appointment.
-
-### Scenario controls
-
-Open **Demo controls** at the top of either screen. Choose one of these outcomes **before** playing a new callback:
-
-1. Appointment booked.
-2. Patient requests a later callback.
-3. Staff transfer is unanswered.
-4. Calendar confirmation is uncertain.
-5. Requested language is unsupported.
-
-The demo clock is fixed at **10:30 AM IST on the current India calendar date**. Future callbacks are not dialled early. Use **Reset demo** to return to the initial fictional session; reset also cancels in-flight timers.
-
-## Edit the source
-
-| File | Purpose |
-| --- | --- |
-| `index.html` | Complete, self-contained copy of the prototype; convenient for copy/paste. |
-| `dist/index.html` | Page structure for the separate-file version. |
-| `dist/style.css` | Responsive visual design, typography and states. |
-| `dist/app.js` | Rendering, forms, navigation, filters and simulation timers. |
-| `dist/model.mjs` | Enquiry and booking state transitions, validation and sample data. |
-| `dist/favicon.svg` | Small inline-authored brand icon. |
-| `vercel.json` | Full-project deployment configuration. |
-| `bundle.mjs` | Recreates root `index.html` from the separate source files. |
-| `preview.mjs` | Optional local static server. |
-| `tests/model.test.mjs` | Twenty workflow and edge-case tests using Node's built-in test runner. |
-| `PRODUCT-NOTES.md` | Scope, implemented edge cases and prototype limits. |
-
-Edit the separate files in `dist`. To update the self-contained version afterwards, run:
-
-```sh
-node bundle.mjs
-```
-
-Node.js is needed only for rebuilding the one-file copy, running tests, or using the optional local server. It is not required for visitors or the static Vercel deployment. There are no npm dependencies.
-
-## Optional checks and local server
-
-With a current Node.js installation:
+## Verification
 
 ```sh
 node --test tests/model.test.mjs
 node --check dist/app.js
-node preview.mjs
+node --check dist/live.js
+python -m unittest discover -s voice_backend/tests -v
+python -m compileall -q voice_backend
 ```
 
-The server prints `http://127.0.0.1:4173`. Stop it with Ctrl+C. Opening the separate-file `dist/index.html` directly from disk can fail because browsers restrict module imports on `file://`; use the local server or open the self-contained root `index.html` instead.
+With the backend installed, run its HTTP tests inside the container:
 
-## Verification
+```sh
+docker compose exec voice python -m unittest discover -s voice_backend/tests -v
+```
 
-- All 20 state/workflow tests passed during preparation.
-- Source syntax was checked.
-- Local browser preview could not connect in the authoring environment. Visual appearance, mobile rendering, keyboard behavior and deployed Vercel behavior have not been browser-verified here.
-- Neither GitHub upload nor Vercel deployment has been performed for this package. It is ready for you to upload.
+At packaging, **20 frontend tests and 54 backend policy/transport/guard tests passed**. Eight HTTP tests were skipped because FastAPI/httpx could not be installed in the authoring environment. Python compilation and JavaScript syntax/bundle checks passed. Docker image installation, Pipecat service imports, actual audio, carrier calls and visual browser interaction remain unverified here. Run the checklist on the target machine before using the live feature.
 
-## Before using real patients or real calls
+The optional static development server is `node preview.mjs`; use the exact localhost origin it prints in the backend origin allowlist. The frontend has no npm dependencies.
 
-This prototype deliberately has no backend, authentication, durable storage, real scheduling integration, consent-policy enforcement service or telephony provider. Names and records stay in browser memory for the current session; raw phone numbers are validated, masked and not retained in the state model. Do not treat this as production security or healthcare validation.
+## Data and limits
 
-The booking calendar, clinical handoffs, contact permissions and all operational results are fictional examples. A live system needs clinic-owned rules, reviewed contact/data policies, qualified handling of clinical questions, authoritative booking records, server-side authorization, durable queues and reconciliation, and real integration tests.
+The sample session is temporary. Live SQLite records retain masked phone digits, an HMAC destination identifier, structured preferences, events, contact suppression and staff task state. They do not contain full phone numbers, raw transcripts or recordings. The configured full test number exists in local environment configuration and is sent to the carrier; carrier-side records are separate. Speech and language models process the call locally after model downloads. Review dependency/provider behavior before any patient deployment.
+
+This release uses one operator token, one process/host, one test destination and SQLite. It has no patient authentication, staff identity/roles, tenant isolation, retention automation, notification delivery, production observability or real booking availability. Task due times are internal targets, not promises that anyone will call. Production use requires those additions and successful live acceptance tests.

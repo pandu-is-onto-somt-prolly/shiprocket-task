@@ -32,15 +32,23 @@ The prototype starts with six fictional enquiries across three fictional pilot l
 | Browser refresh | The fictional session resets; the page states this explicitly. |
 | Entered text | All user-derived content is escaped before insertion into rendered HTML. |
 
-These are demonstrative in-memory behaviors. They do not implement distributed locking, real provider idempotency, durable recovery or access control. A real calendar would need to provide a stable request reference and authoritative booking lookup; the simulation supplies deterministic outcomes only.
+The table above describes the sample in-memory demonstration. The separate live backend now adds persistent dispatch records, admission transactions, access control and restart recovery. A real calendar would still need an authoritative booking lookup; the live backend only collects requests for staff review.
 
 ## Boundaries
 
 - No diagnosis, prescribing, treatment eligibility, individualized price guarantees or payment collection.
-- No live phone calls, SMS, audio, real transfers, external clinic data or background retries.
+- The sample mode makes no calls. The optional backend implements live test calls and optional staff transfers; SMS, real clinic data and automatic retries remain absent.
 - No real-time calendar integration or multi-user collaboration. The named staff member is a fictional demo identity.
-- No permanent patient records. Do not use real data; the sample details are supplied for trying the flow.
+- Sample records reset in memory. Live test records persist in local SQLite as structured outcomes, masked identifiers and staff tasks. Use only your own consented test phone and fictional preferences during acceptance testing.
 - No clinical emergency advice is generated. The sample clinical question is routed to clinic staff.
 - No measured conversion improvement is claimed. The reported association between fast callbacks and bookings would require a fair experiment before making causal claims.
 
 The prior planning handoff contains a broader risk register. This prototype covers representative behaviors within a two-screen case exercise; it does not claim to implement every production edge case.
+
+## Live voice extension
+
+The patient screen now has an operator connection/preparation/call control, and the clinic screen displays durable real-call records separately from the sample queue. The application still has two screens. Live speech uses Pipecat Flows, local Whisper, Ollama and Kokoro; Twilio supplies the first phone transport.
+
+The backend validates fixed-destination call admission, limits concurrency and calling hours, records uncertain launches without redialling, verifies signed carrier events and media capabilities, and blocks stale model actions after hangup/stop. Only approved script lines reach TTS. Confirmations require an explicit fresh yes after a completed read-back, with revision checks and interruption invalidation. Staff transfer acceptance and appointment confirmation are not inferred.
+
+No end-to-end phone/audio validation has been performed here. See `VOICE-SETUP.md` and `REAL-CALL-CHECKLIST.md` for configuration and the complete coverage matrix. The current scope is supervised English calls to the operator's own configured phone; real calendar booking, callback scheduling, multilingual support, production staff identity/roles, notifications and retention tooling remain outside it.

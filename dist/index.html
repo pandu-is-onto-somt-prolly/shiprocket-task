@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c695d">
+  <meta name="description" content="HappySmile Care Connect: an interactive two-screen prototype for patient callbacks and clinic follow-up. All data and calls are simulated.">
+  <title>HappySmile · Care Connect</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="topbar">
+    <a class="brand" href="#patient" aria-label="HappySmile, patient experience"><span class="brandmark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M7 7c3-3 6 0 9 0s6-3 9 0c4 4-1 18-4 18-2 0-1-9-5-9s-3 9-5 9C8 25 3 11 7 7Z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg></span><span>Happy<span class="brand-light">Smile</span><small>CARE CONNECT</small></span></a>
+    <nav class="view-switch" aria-label="Prototype screens"><button class="view-tab active" id="patient-tab" data-view="patient" aria-pressed="true">Patient experience</button><button class="view-tab" id="clinic-tab" data-view="clinic" aria-pressed="false">Clinic workspace<span class="new-dot" id="new-lead" hidden></span></button></nav>
+    <span class="prototype-label"><span class="tiny-spark" aria-hidden="true">✧</span> Interactive prototype</span>
+  </header>
+  <div class="demo-strip"><p><strong>Fictional data. Simulated calls.</strong> Nothing is sent or dialled. Resets on refresh.</p><details id="demo-controls"><summary>Demo controls</summary><div class="demo-controls-body"><label for="scenario">Callback outcome</label><select id="scenario"><option value="booking">Appointment booked</option><option value="callback">Patient asks for later</option><option value="handoff">Staff transfer unanswered</option><option value="uncertain">Calendar confirmation uncertain</option><option value="language">Unsupported language</option></select><span id="demo-clock">Demo clock · 10:30 AM IST</span><button id="reset-demo" class="text-button">Reset demo</button></div></details></div>
+  <main id="main" tabindex="-1">
+    <section id="patient-screen" aria-labelledby="patient-heading">
+      <div class="patient-grid">
+        <div class="patient-story"><p class="eyebrow"><span aria-hidden="true">✦</span> A LITTLE CLOSER TO YOUR NEXT SMILE</p><h1 id="patient-heading">Good care starts<br>with a <em>conversation.</em></h1><p class="hero-description">Tell us what you need. Our AI care assistant will call at a time that works for you and help you find your next appointment.</p>
+          <div class="voice-preview"><div class="voice-orbit"><span class="voice-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="orbit-dot" aria-hidden="true"></span></div><div><span class="mini-label">MEET YOUR CARE ASSISTANT</span><h2>A helpful voice.<br>A human team behind it.</h2><p>Simple booking help from AI.<br>Clinic staff whenever you need them.</p></div><span class="voice-spark" aria-hidden="true">✧</span></div>
+          <div class="care-promises"><div><span class="promise-icon" data-icon="clock"></span><span><strong>Your time, respected</strong><small>Choose when we should call.</small></span></div><div><span class="promise-icon" data-icon="users"></span><span><strong>A person is always an option</strong><small>Ask for clinic staff at any point.</small></span></div><div><span class="promise-icon" data-icon="shield"></span><span><strong>Here to help you book</strong><small>Clinical questions go to the care team.</small></span></div></div>
+          <p class="patient-footnote">Designed for HappySmile’s 12-clinic network. <span>Three fictional locations in this demo.</span></p>
+        </div>
+        <div class="request-column"><div class="request-card" id="request-card"><div class="form-heading"><span class="card-kicker">LET’S FIND A TIME TO TALK</span><h2>How can we help?</h2><p>A few details, and we’ll take it from here.</p></div><div class="sample-row"><span>Just exploring?</span><button class="text-button" type="button" id="sample-details">Use sample details</button></div>
+          <form id="request-form" novalidate>
+            <div class="field"><label for="patient-name">Your name</label><input id="patient-name" name="name" autocomplete="off" placeholder="e.g. Aarav Sharma" maxlength="70" aria-describedby="name-error"><span class="field-error" id="name-error"></span></div>
+            <div class="field"><label for="patient-phone">Mobile number</label><div class="phone-field"><span>+91</span><input id="patient-phone" name="phone" inputmode="tel" autocomplete="off" placeholder="90000 00101" maxlength="18" aria-describedby="phone-error phone-hint"></div><span class="field-hint" id="phone-hint">Use sample details. Please don’t enter real patient information.</span><span class="field-error" id="phone-error"></span></div>
+            <div class="field-pair"><div class="field"><label for="treatment">I’m interested in</label><select id="treatment" name="service"><option value="General consultation">General consultation</option><option>Braces &amp; aligners</option><option>Teeth whitening</option><option>Dental implants</option></select></div><div class="field"><label for="clinic">Preferred clinic</label><select id="clinic" name="clinic"><option>Indiranagar</option><option>Koramangala</option><option>Whitefield</option></select></div></div>
+            <div class="field"><label for="language">Preferred language</label><select id="language" name="language"><option>English</option><option>Hindi</option><option>Kannada</option></select></div>
+            <fieldset class="callback-choice"><legend>When should we call?</legend><div class="choice-pair"><label class="choice"><input type="radio" name="when" value="soon" checked><span><strong>Call me soon</strong><small>Within 5 minutes in this demo</small></span></label><label class="choice"><input type="radio" name="when" value="later"><span><strong>Choose a time</strong><small>A callback that fits your day</small></span></label></div></fieldset>
+            <div class="field-pair scheduled-fields" id="scheduled-fields" hidden><div class="field"><label for="callback-date">Callback date</label><input type="date" id="callback-date" name="date" aria-describedby="schedule-error"></div><div class="field"><label for="callback-time">Time · IST</label><select id="callback-time" name="time"><option value="09:00">9:00 AM</option><option value="10:00">10:00 AM</option><option value="11:00" selected>11:00 AM</option><option value="12:00">12:00 PM</option><option value="14:00">2:00 PM</option><option value="16:00">4:00 PM</option><option value="18:00">6:00 PM</option><option value="19:00">7:00 PM</option></select></div></div><span id="schedule-error" class="field-error"></span>
+            <label class="consent"><input type="checkbox" name="consent" id="contact-consent" aria-describedby="consent-error"><span>I’d like a callback from HappySmile’s <strong>AI assistant</strong> about this enquiry. I can ask for staff or stop contact at any time.</span></label><span class="field-error" id="consent-error"></span>
+            <div class="form-feedback" id="form-feedback" role="alert" hidden></div><button type="submit" class="button primary full" id="request-submit">Request my callback</button><p class="form-footer"><span data-icon="lock"></span> Appointment help only. No diagnosis or treatment advice.</p>
+          </form></div><div id="request-success" class="request-card success-card" hidden></div><p class="below-form">Prefer speaking with a person? Choose that during your callback.</p></div>
+      </div>
+    </section>
+    <section id="clinic-screen" aria-labelledby="clinic-heading" hidden>
+      <div class="workspace-heading"><div><p class="eyebrow">CARE CONNECT / FRONT DESK</p><h1 id="clinic-heading">Every enquiry.<br class="mobile-break"> A clear next step.</h1><p>AI handles the routine. Your team stays in the loop.</p></div><div class="workspace-meta"><span class="staff-avatar">NP</span><span><strong>Neha Patel</strong><small>Front desk · Demo account</small></span></div></div>
+      <div class="workspace-context"><div class="workspace-location"><span data-icon="building"></span><label for="clinic-filter" class="sr-only">Filter by clinic</label><select id="clinic-filter"><option value="all">All demo clinics</option><option>Indiranagar</option><option>Koramangala</option><option>Whitefield</option></select></div><span id="workspace-date"></span><span class="sample-indicator">Sample session</span></div>
+      <div class="metric-row" id="metric-row"></div>
+      <div class="workspace-grid"><div class="queue-panel"><div class="queue-heading"><div><h2>Enquiry inbox <span id="queue-count"></span></h2><p>What needs a little human attention?</p></div><span class="quiet-icon" data-icon="inbox"></span></div><div class="queue-tabs" role="group" aria-label="Enquiry status filter"><button class="queue-tab active" data-filter="attention" aria-pressed="true">Needs attention <span id="attention-count"></span></button><button class="queue-tab" data-filter="all" aria-pressed="false">All enquiries</button><button class="queue-tab" data-filter="booked" aria-pressed="false">Booked</button></div><div class="search-wrap"><span data-icon="search"></span><label for="queue-search" class="sr-only">Search enquiries</label><input type="search" id="queue-search" placeholder="Search name, reference or service" autocomplete="off"></div><div class="enquiry-list" id="enquiry-list"></div><div class="queue-footer"><span data-icon="shield"></span> Only fictional records are shown.</div></div><article id="enquiry-detail" class="detail-panel" aria-label="Selected enquiry details"></article></div>
+      <p class="workspace-footnote">Prototype boundaries: calling, calendar updates and messages are simulated. No live patient information is collected.</p>
+    </section>
+  </main>
+  <div id="toast" role="status" aria-live="polite" hidden></div>
+  <div class="sr-only" role="status" aria-live="polite" id="live-status"></div>
+  <footer class="site-footer"><span>HappySmile <span class="footer-divider">/</span> A thoughtful first step to better care.</span><span>Two-screen product prototype</span></footer>
+</body>
+</html>
